@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import Home from "./routes/Home.tsx";
-import Search from "./routes/Search.tsx";
 import Detail from "./routes/Detail.tsx";
 import "./styles/global.css";
+import Search from "./routes/Search.tsx";
 
 function App() {
   return <BrowserRouter>

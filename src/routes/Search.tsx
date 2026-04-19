@@ -1,10 +1,7 @@
-import { Link, useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router";
 import styles from "./Search.module.css";
-
-const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-
-type BookItem = {
+export type BookItem = {
     id: string;
     volumeInfo: {
         title: string;
@@ -17,45 +14,36 @@ type BookItem = {
     };
 };
 
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
 function Search() {
-    // query string으로 들어온 값을 꺼내오기 위해서는 useSearchParams를 사용
+    const [params] = useSearchParams();
+    const q = params.get("keyword");
 
-    // useParams를 사용할 떄는 const {id} = useParams();
-    // useSearchParams는 useState와 사용법이 동일
-    const [params, setParams] = useSearchParams(); // queryString 내용이 params에 담겨 나옴
-    const k = params.get("keyword"); // "수학" 이라는게 있을 수도 있지만, 없을 수도 있음 (k : string | null) >> 쿼리스트링은 사용자가 지울수도 있다.
-
-    // keyword 준비 됐으니, API를 통해 요청한 정보를 받아다가 화면에 출력만 해주면 됨
-    const [loading, setLoading] = useState(true);
     const [list, setList] = useState<BookItem[]>([]);
 
     useEffect(() => {
-        if (!k) return;
-        fetch(`https://www.googleapis.com/books/v1/volumes?q=${k}&maxResults=20&key=${API_KEY}`)
+        if (!q) return;
+        fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=20&key=${API_KEY}`)
             .then(res => res.json())
             .then(json => {
-                setList(json.items);
-                setLoading(false);
+                setList(json.items || []);
             })
-            .catch(err => {
-                console.log(err);
-                setLoading(false);
-            });
-    }, []);
+            .catch(() => setList([]));
+    }, [q]);
 
     return (
-        <div className={styles.container}>
-            <h3>검색 결과: {k}</h3>
-            <div className={styles.content}>
-                {list.map((value) => (
-                    <Link key={value.id} to={`/detail/{value.id}`} className={styles.Link}>
-                        <img className={styles.bookImage} src={value.volumeInfo.imageLinks?.thumbnail} alt={value.volumeInfo.title}/>
-                        <div className={styles.info}>
-                            <h3 className={styles.bookTitle}>{value.volumeInfo.title}</h3>
-                        </div>
-                    </Link>
-                ))}
-            </div>
+        <div className={styles.wrap}>
+            <h3>검색 결과: {q}</h3>
+            {list.map(b => (
+                <Link key={b.id} to={`detail/${b.id}`} className={styles.wrap}>
+                    <img src={b.volumeInfo.imageLinks?.thumbnail} alt={b.volumeInfo.title} className={styles.cover}/>
+                    <div>
+                        <div className={styles.title}>{b.volumeInfo.title}</div>
+                        <div className={styles.authors}>{b.volumeInfo.authors?.join(", ")}</div>
+                    </div>
+                </Link>
+            ))}
         </div>
     );
 }
