@@ -25,3 +25,13 @@
     border-radius: 8px;
     margin-bottom: 20px;
 }
+
+.noCover {
+    width: 200px;
+    height: 300px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
