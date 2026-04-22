@@ -1,9 +1,44 @@
 import { useNavigate, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import type { BookItem } from "./Search.tsx";
-import styles from "./Detail.module.css";
+import styled from "styled-components";
 
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
+const Wrap = styled.div`
+    padding: 30px;
+`;
+
+const BackBtn = styled.button`
+    display: flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #f3f3f3;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.5s;
+
+    &:hover {
+        background-color: #e0e0e0;
+        border-color: #999;
+    }
+`;
+
+const Cover = styled.img`
+    width: 200px;
+    height: 300px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+`;
+
+const NoCover = styled.div`
+    width: 200px;
+    height: 300px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+`;
 
 function Detail() {
     const { id } = useParams();
@@ -23,19 +58,17 @@ function Detail() {
     // loading을 보여주기 위해서는 따로 loading을 관리했었어야 했는데
     // Detail 컴포넌트에서는 book이 초기값은 null이록, 값이 도착하면 BookType이되고, 값이 도착하지 않으면 null라서
     // book의 값이 있는지 없는지만 체크해줘도 loading 상태를 판별 할 수 있음.
-    if (!book) return <div className={styles.wrap}>Loading...</div>;
+    if (!book) return <Wrap>Loading...</Wrap>;
 
     return (
-        <div className={styles.wrap}>
-            <button className={styles.backBtn} onClick={() => navigate(-1)}>
-                &larr; 뒤로가기
-            </button>
+        <Wrap>
+            <BackBtn onClick={() => navigate(-1)}>&larr; 뒤로가기</BackBtn>
 
             <h2>{book.volumeInfo.title}</h2>
             {book.volumeInfo.imageLinks?.thumbnail ? (
-                <img className={styles.cover} src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title}/>
+                <Cover src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
             ) : (
-                <div>No Cover</div>
+                <NoCover>No Cover</NoCover>
             )}
             <p>{book.volumeInfo.authors?.join(", ")}</p>
             {/*
@@ -47,8 +80,8 @@ function Detail() {
 
                 사용법 : dangerouslySetInnerHTML={{ __html: '내용' }}
             */}
-            <p dangerouslySetInnerHTML={{ __html: book.volumeInfo.description || "설명 없음"}}></p>
-        </div>
+            <p dangerouslySetInnerHTML={{ __html: book.volumeInfo.description || "설명 없음" }}></p>
+        </Wrap>
     );
 }
 

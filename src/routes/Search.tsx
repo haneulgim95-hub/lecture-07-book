@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
-import styles from "./Search.module.css";
+import styled from "styled-components";
 
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
@@ -19,6 +19,65 @@ export type BookItem = {
 };
 
 type ApiResponseType = { items: BookItem[] };
+
+// styled. 으로 연결할 때에는 기본 태그일 때
+const Container = styled.div`
+    padding: 30px;
+`;
+
+const Content = styled.div`
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+`;
+
+// styled()로 연결할 때에는 컴포넌트일 때 
+// 이 StyleLink라는 애는, Link의 기능을 물려받은 스타일링 적용한 컴포넌트가 됨 
+const StyledLink = styled(Link)`
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: white;
+    border: 1px solid #d2d1d1;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.5s;
+    
+    // 이건 styled-components의 문법이 아니라, 
+    // sass (향상된 CSS) 문법임
+    &:hover {
+        background-color: #f3f3f3;
+    }
+`;
+
+const Cover = styled.img`
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 4px;
+`;
+
+const NoCover = styled.div`
+    width: 60px;
+    height: 90px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const BookTitle = styled.h3`
+    font-weight: 600;
+    margin-bottom: 4px;
+`;
+
+const Authors = styled.div`
+    font-size: 12px;
+    color: #555;
+`;
 
 function Search() {
     // 이 컴포넌트의 목적 : 사용자가 요청한 keyword를 받아서, 그걸 가지고 google API 요청을 하고, 받아온 결과를 화면에 출력해주는 일
@@ -56,7 +115,7 @@ function Search() {
     // loading이 오래 걸릴것 같고 사용자에게 이러한 안내가 필요할것 같은 상황에만 loading을 만들어준다.
 
     return (
-        <div className={styles.container}>
+        <Container>
             <h3>검색 결과: {k}</h3>
 
             {/* 검색 결과 (책 목록) 출력*/}
@@ -66,32 +125,31 @@ function Search() {
             9851740져봤을 때 list는
             무조건 array이긴 하니깐 굳이 논리곱으로 체긐해줄 필요가 없다. */}
 
-            <div className={styles.content}>
+            <Content>
                 {list.map(value => (
-                    <Link key={value.id} to={`/detail/${value.id}`} className={styles.item}>
+                    <StyledLink key={value.id} to={`/detail/${value.id}`}>
                         {value.volumeInfo.imageLinks?.thumbnail ? (
-                            <img
-                                className={styles.cover}
+                            <Cover
                                 src={value.volumeInfo.imageLinks?.thumbnail}
                                 alt={value.volumeInfo.title}
                             />
                         ) : (
-                            <div className={styles.noCover}>No cover</div>
+                            <NoCover>No cover</NoCover>
                         )}
 
-                        <div className={styles.info}>
-                            <h3 className={styles.bookTitle}>{value.volumeInfo.title}</h3>
+                        <div>
+                            <BookTitle>{value.volumeInfo.title}</BookTitle>
                             {/*
                                 array에서 사용할 수 있는 메소드 join(문자열)
                                 각 요소를 순회해서 하나의 값을 리턴하는데
                                 각 요소 사이에 [매개변수로 제공된 스트링] 를 넣어준다.
                             */}
-                            <div className={styles.authors}>{value.volumeInfo.authors?.join(", ")}</div>
+                            <Authors>{value.volumeInfo.authors?.join(", ")}</Authors>
                         </div>
-                    </Link>
+                    </StyledLink>
                 ))}
-            </div>
-        </div>
+            </Content>
+        </Container>
     );
 }
 
